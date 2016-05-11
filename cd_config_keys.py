@@ -99,10 +99,10 @@ def dlg_config_keys():
                  ,dict(cid='lwks',tp='lvw'  ,t=GAP+30   ,l=GAP          ,w=LST_W,h=LST_H  ,items=itms ,props='1'            ) #     grid
                  ,dict(cid='fltr',tp='bt'   ,tid='ccnd' ,l=GAP+500      ,w=80   ,cap=_('&Filter list'),props='1'            ) # &f  default
                  ,dict(cid='drop',tp='bt'   ,tid='kcnd' ,l=GAP+LST_W-80 ,w=80   ,cap=_('Show &all')                         ) # &a
-                 ,dict(cid='add1',tp='bt'   ,t=DLG_H-60 ,l=GAP          ,w=130  ,cap=_('Set/Add Hotkey-&1')     ,hint=addk_h) # &1
-                 ,dict(cid='add2',tp='bt'   ,t=DLG_H-30 ,l=GAP          ,w=130  ,cap=_('Set/Add Hotkey-&2')     ,hint=addk_h) # &2
-                 ,dict(cid='del1',tp='bt'   ,t=DLG_H-60 ,l=GAP+140      ,w=130  ,cap=_('Remove Hotkey-1 &!')                ) # &!
-                 ,dict(cid='del2',tp='bt'   ,t=DLG_H-30 ,l=GAP+140      ,w=130  ,cap=_('Remove Hotkey-2 &@')                ) # &@
+                 ,dict(cid='add1',tp='bt'   ,t=DLG_H-60 ,l=GAP          ,w=150  ,cap=_('Set/Add Hotkey-&1')     ,hint=addk_h) # &1
+                 ,dict(cid='add2',tp='bt'   ,t=DLG_H-30 ,l=GAP          ,w=150  ,cap=_('Set/Add Hotkey-&2')     ,hint=addk_h) # &2
+                 ,dict(cid='del1',tp='bt'   ,t=DLG_H-60 ,l=GAP+150+GAP  ,w=150  ,cap=_('Remove Hotkey-1 &!')                ) # &!
+                 ,dict(cid='del2',tp='bt'   ,t=DLG_H-30 ,l=GAP+150+GAP  ,w=150  ,cap=_('Remove Hotkey-2 &@')                ) # &@
                  ,dict(cid='hrpt',tp='bt'   ,t=DLG_H-60 ,l=DLG_W-GAP-200,w=110  ,cap=_('HT&ML-report')          ,hint=hrpt_h) # &m 
                  ,dict(cid='trpt',tp='bt'   ,t=DLG_H-30 ,l=DLG_W-GAP-200,w=110  ,cap=_('&Tab-report')           ,hint=trpt_h) # &t
                  ,dict(cid='help',tp='bt'   ,t=DLG_H-60 ,l=DLG_W-GAP-80 ,w=80   ,cap=_('Hel&p')                             ) # &p 
@@ -267,4 +267,5 @@ if __name__ == '__main__':
 """ TODO
 [+][kv-kv][11dec15] Init
 [+][kv-kv][10may16] Shift HK-2 to HK-1 after del HK-1
+[ ][kv-kv][10may16] @ in "In cmd" for filter in keys
 """
