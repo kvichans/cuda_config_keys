@@ -1,11 +1,12 @@
 [info]
 title=Config Keymap
-desc=Shows dialog for view/set hotkeys in editor
+desc=Shows dialog to view/set hotkeys in editor
 type=cudatext-plugin
 subdir=cuda_config_keys
+homepage=https://github.com/kvichans/cuda_config_keys
 
 [item1]
 section=commands
-caption=Config &Keymap
+caption=Config Keymap
 method=dlg_config_keys
 ;menu=0
