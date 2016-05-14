@@ -215,7 +215,7 @@ def dlg_config_keys():
 
 def collect_keys():
     keys_json   = os.path.join(app.app_path(app.APP_DIR_SETTINGS), 'keys.json')
-    keys        = apx._json_loads(open(keys_json).read())
+    keys        = apx._json_loads(open(keys_json).read()) if os.path.isfile(keys_json) else {}
 
     cmdinfos    = []
     # Core cmds
