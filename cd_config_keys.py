@@ -2,7 +2,7 @@
 Authors:
     Andrey Kvichansky    (kvichans on github)
 Version:
-    '0.8.0 2016-05-10'
+    '0.8.1 2016-05-20'
 '''
 #! /usr/bin/env python3
 
@@ -60,6 +60,7 @@ def dlg_config_keys():
     hrpt_h      = _('Shows HTML page with report of all hotkeys in editor.'
                   '\rThe report is usefull to analyze hotkeys in a whole.')
     trpt_h      = _('Show in new tab compact report of hotkeys in editor')
+    cpnm_h      = _('Copy command name to clipboard')
     reND    = re.compile(r'\W')
     def prep_nm(nm):
         nm  = nm.replace('&', '')
@@ -103,6 +104,7 @@ def dlg_config_keys():
                  ,dict(cid='add2',tp='bt'   ,t=DLG_H-30 ,l=GAP          ,w=150  ,cap=_('Set/Add Hotkey-&2')     ,hint=addk_h) # &2
                  ,dict(cid='del1',tp='bt'   ,t=DLG_H-60 ,l=GAP+150+GAP  ,w=150  ,cap=_('Remove Hotkey-1 &!')                ) # &!
                  ,dict(cid='del2',tp='bt'   ,t=DLG_H-30 ,l=GAP+150+GAP  ,w=150  ,cap=_('Remove Hotkey-2 &@')                ) # &@
+                 ,dict(cid='cpnm',tp='bt'   ,t=DLG_H-60 ,l=GAP+300+GAP*2,w=110  ,cap=_('Copy &name')            ,hint=cpnm_h) # &n 
                  ,dict(cid='hrpt',tp='bt'   ,t=DLG_H-60 ,l=DLG_W-GAP-200,w=110  ,cap=_('HT&ML-report')          ,hint=hrpt_h) # &m 
                  ,dict(cid='trpt',tp='bt'   ,t=DLG_H-30 ,l=DLG_W-GAP-200,w=110  ,cap=_('&Tab-report')           ,hint=trpt_h) # &t
                  ,dict(cid='help',tp='bt'   ,t=DLG_H-60 ,l=DLG_W-GAP-80 ,w=80   ,cap=_('Hel&p')                             ) # &p 
@@ -144,6 +146,10 @@ def dlg_config_keys():
             do_report(htm_file)
             webbrowser.open_new_tab('file://'+htm_file)
             app.msg_status(_('Opened browser with file ')+htm_file)
+        
+        elif btn=='cpnm' and cmd_id:
+            cmd_nkk = id2nkks[cmd_id]
+            app.app_proc(app.PROC_SET_CLIP, cmd_nkk[0])
         
         elif btn in ('del1', 'del2') and cmd_id:
             # Delete the hotkeys
