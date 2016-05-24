@@ -118,7 +118,7 @@ def dlg_config_keys():
                       ,kcnd=kcnd
                       ,lwks=lwks_n)
         pass;                  #LOG and log('in-vals={}',(vals))
-        btn, vals, chds = dlg_wrapper(_('Keymap'), DLG_W, DLG_H, cnts, vals, focus_cid=focused)
+        btn, vals, chds = dlg_wrapper(_('Config Keymap'), DLG_W, DLG_H, cnts, vals, focus_cid=focused)
         pass;                  #LOG and log('an-vals={}',(vals))
         pass;                  #LOG and log('chds={}',(chds))
         if btn is None or btn=='-':    return#while True
@@ -195,7 +195,7 @@ def dlg_config_keys():
         
         elif btn=='help':
             DW, DH      = DLG_W-2*GAP, DLG_H-2*GAP
-            dlg_wrapper(_('Help for "Config Keymaps"'), DLG_W, DLG_H,
+            dlg_wrapper(_('Help for "Config Keymap"'), DLG_W, DLG_H,
                  [dict(cid='htxt',tp='me'    ,t=GAP  ,h=DH-28,l=GAP          ,w=DW   ,props='1,0,1'  ) #  ro,mono,border
                  ,dict(cid='-'   ,tp='bt'    ,t=GAP+DH-23    ,l=GAP+DW-80    ,w=80   ,cap=_('&Close'))
                  ], dict(htxt=
