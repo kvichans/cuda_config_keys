@@ -2,7 +2,7 @@
 Authors:
     Andrey Kvichansky    (kvichans on github)
 Version:
-    '0.9.1 2016-06-24'
+    '0.9.2 2016-07-19'
 '''
 #! /usr/bin/env python3
 
@@ -58,7 +58,7 @@ def dlg_config_keys():
         
     COL_WS      = [340, 200, 200, 150] 
     COL_WS      = [COL_WS[0]+COL_WS[3]]+COL_WS[1:3]+[0] if not sndt else COL_WS
-    LST_W, LST_H= sum(COL_WS)+20, 400
+    LST_W, LST_H= sum(COL_WS)+20, 400-5
     DLG_W, DLG_H= 5+LST_W+5+100+5, 5+LST_H+105+5+3
     lfk1        = 5+COL_WS[0]+5
     lfk2        = 5+COL_WS[0]+COL_WS[1]+5
@@ -128,11 +128,11 @@ def dlg_config_keys():
                   ,    [ (nm,                 k1,             k2,          ', '.join(sns)) 
                         for  (nm, k1, k2, id, sns) in fl_NKKISs ])
         cnts    =([]
-                 +[dict(cid='fltr',tp='bt'  ,t=5+40+5   ,l=lrpt ,w=100  ,cap=_('&Filter')       ,props='1'          )] # &f  default
-                 +[dict(cid='drop',tp='bt'  ,t=5+70+5   ,l=lrpt ,w=100  ,cap=_('&All')                              )] # &a
-                 +[dict(cid='orcn',tp='ch'  ,t=5        ,l=lfk1-40,w=40 ,cap=_('&OR')           ,act='1'            )] # &o
+                 +[dict(cid='fltr',tp='bt'  ,t=5+40+10  ,l=lrpt ,w=100  ,cap=_('&Filter')       ,props='1'          )] # &f  default
+                 +[dict(cid='drop',tp='bt'  ,t=5+70+10  ,l=lrpt ,w=100  ,cap=_('&All')                              )] # &a
+                 +[dict(cid='orcn',tp='ch'  ,t=5        ,l=lfk1-50,w=40 ,cap=_('&OR')           ,act='1'            )] # &o
                 +([] if not sndt else []
-                 +[dict(cid='orsn',tp='ch'  ,t=5        ,l=lfsn-40,w=40 ,cap=_('O&R')           ,act='1'            )] # &r
+                 +[dict(cid='orsn',tp='ch'  ,t=5        ,l=lfsn-50,w=40 ,cap=_('O&R')           ,act='1'            )] # &r
                 )
                  +[dict(           tp='lb'  ,tid='orcn' ,l=5+5  ,w=90   ,cap=_('In &Command:')          ,hint=ccnd_h)] # &c
                  +[dict(cid='ccnd',tp='ed'  ,t=5+20     ,l=5+5  ,w=150                                              )] #
@@ -142,7 +142,7 @@ def dlg_config_keys():
                  +[dict(           tp='lb'  ,tid='orsn' ,l=lfsn ,w=50   ,cap=_('In &Snip(s):')          ,hint=scnd_h)] # &s
                  +[dict(cid='scnd',tp='ed'  ,t=5+20     ,l=lfsn ,w=100                                              )] #
                 )
-                 +[dict(cid='lwks',tp='lvw' ,t=5+40+5   ,l=5    ,w=LST_W,h=LST_H  ,items=itms   ,props='1'          )] #     grid
+                 +[dict(cid='lwks',tp='lvw' ,t=5+50     ,l=5    ,w=LST_W,h=LST_H  ,items=itms   ,props='1'          )] #     grid
                 
                  +[dict(cid='cpnm',tp='bt'  ,t=DLG_H-60 ,l=5+5  ,w=110  ,cap=_('Copy &name')            ,hint=cpnm_h)] # &n 
                  +[dict(cid='add1',tp='bt'  ,t=DLG_H-60 ,l=lfk1 ,w=150  ,cap=_('Set/Add Hotkey-&1')     ,hint=addk_h)] # &1
@@ -165,20 +165,21 @@ def dlg_config_keys():
         vals    =       dict(ccnd=ccnd
                             ,kcnd=kcnd
                             ,orcn=orcn
-                            ,orsn=orsn
                             ,lwks=lwks_n)
         if sndt:
-            vals.update(dict(scnd=scnd))
+            vals.update(dict(scnd=scnd
+                            ,orsn=orsn
+            ))
         pass;                  #LOG and log('in-vals={}',(vals))
-        btn, vals, chds = dlg_wrapper(_('Config Keymap'), DLG_W, DLG_H, cnts, vals, focus_cid=focused)
+        btn, vals, chds = dlg_wrapper(_('Config Hotkeys'), DLG_W, DLG_H, cnts, vals, focus_cid=focused)
         pass;                  #LOG and log('an-vals={}',(vals))
         pass;                  #LOG and log('chds={}',(chds))
         if btn is None or btn=='-':    return#while True
         ccnd    = vals['ccnd'].strip()
         kcnd    = vals['kcnd'].strip()
-        scnd    = vals['scnd'].strip() if sndt else ''
+        scnd    = vals['scnd'].strip()  if sndt else ''
         orcn    = vals['orcn']
-        orsn    = vals['orsn']
+        orsn    = vals['orsn']          if sndt else False
         lwks_n  = vals['lwks']
         cmd_id  = '' if lwks_n==-1 else fl_Is[lwks_n]
         pass;                  #LOG and log('cmd_id={}',(cmd_id,))
@@ -286,7 +287,7 @@ def dlg_config_keys():
 
         elif btn=='help':
             DW, DH      = DLG_W-2*GAP, DLG_H-2*GAP
-            dlg_wrapper(_('Help for "Config Keymap"'), DLG_W, DLG_H,
+            dlg_wrapper(_('Help for "Config Hotkeys"'), DLG_W, DLG_H,
                  [dict(cid='htxt',tp='me'    ,t=GAP  ,h=DH-28,l=GAP          ,w=DW   ,props='1,0,1'  ) #  ro,mono,border
                  ,dict(cid='-'   ,tp='bt'    ,t=GAP+DH-23    ,l=GAP+DW-80    ,w=80   ,cap=_('&Close'))
                  ], dict(htxt=
