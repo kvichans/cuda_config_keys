@@ -1,3 +1,6 @@
+1.1.1 (2018-01-10)
+fixed: skip deprecated API
+
 0.9.2 (2016-07-19)
 changed: layout for Mac
 fixed: use w/o snip2call

@@ -1,8 +1,8 @@
 ''' Plugin for CudaText editor
 Authors:
-    Andrey Kvichansky    (kvichans on github)
+	Andrey Kvichansky    (kvichans on github)
 Version:
-    '1.1.0 2016-04-01'
+	'1.1.1 2018-01-10'
 '''
 #! /usr/bin/env python3
 
@@ -37,8 +37,8 @@ table td, table th{
 	border-color: 	gray;
 }
 td.ctg {
-    font-weight: 	bold;
-    color: 			darkblue;
+	font-weight: 	bold;
+	color: 			darkblue;
 	text-align: 	center;
 }
 .dbl {
@@ -103,31 +103,50 @@ def collect_data():
 	ctgs		= []
 	cmdinfos	= []
 
-	n=0
-	while True:
-		# Cud (5	  ,'smth', 'Shift+Ctrl+F1', 'Alt+Q * Ctrl+T')
-		# Syn (5,'ctg','smth', 'Shift+Ctrl+F1', 'Alt+Q · Ctrl+T')
-		cmdinfo = app.app_proc(app.PROC_GET_COMMAND, str(n))
-		n += 1
-		if cmdinfo is None: break
-		if cmdinfo[0]<=0: continue
+	if app_name=='CudaText' and app.app_api_version()>='1.0.212':
+		lcmds   = app.app_proc(app.PROC_GET_COMMANDS, '')
+		cmdinfos= [('Commands'
+				   ,cmd['name']
+				   ,cmd['key1']
+				   ,cmd['key2']
+				   #,cmd['cmd']
+				   )
+						if cmd['type']=='cmd' else 
+				   ('Plugins'
+				   ,cmd['name']
+				   ,cmd['key1']
+				   ,cmd['key2']
+				   #,'{},{},{}'.format(cmd['p_module'], cmd['p_method'], cmd['p_method_params']).rstrip(',')
+				   )
+						for cmd in lcmds
+						if cmd['type']!='lexer'
+				]
+	else: # Syn or old Cud
+		n=0
+		while True:
+			# Cud (5	  ,'smth', 'Shift+Ctrl+F1', 'Alt+Q * Ctrl+T')
+			# Syn (5,'ctg','smth', 'Shift+Ctrl+F1', 'Alt+Q · Ctrl+T')
+			cmdinfo = app.app_proc(app.PROC_GET_COMMAND, str(n))
+			n += 1
+			if cmdinfo is None: break
+			if cmdinfo[0]<=0: continue
+			if app_name=='CudaText':
+				# Add default category
+				cmdinfo	= ('Commands', cmdinfo[1], cmdinfo[2], cmdinfo[3])
+			else:
+				cmdinfo	= (cmdinfo[1], cmdinfo[2], cmdinfo[3], cmdinfo[4])
+
+			ctg, name, keys1, keys2 = cmdinfo
+			if	name.startswith('lexer:'):		continue	# ?? lexer? smth-more?
+			if (app_name=='CudaText' and
+				name.startswith('plugin:')):	continue	# ?? plugin? smth-more?
+			if (app_name=='SynWrite' and
+				ctg=='Plugin'):
+				cmdinfo	= (ctg, 'Plugin: '+name, keys1, keys2)
+
+			cmdinfos += [cmdinfo]
 		if app_name=='CudaText':
-			# Add default category
-			cmdinfo	= ('Commands', cmdinfo[1], cmdinfo[2], cmdinfo[3])
-		else:
-			cmdinfo	= (cmdinfo[1], cmdinfo[2], cmdinfo[3], cmdinfo[4])
-
-		ctg, name, keys1, keys2 = cmdinfo
-		if	name.startswith('lexer:'):		continue	# ?? lexer? smth-more?
-		if (app_name=='CudaText' and
-			name.startswith('plugin:')):	continue	# ?? plugin? smth-more?
-		if (app_name=='SynWrite' and
-			ctg=='Plugin'):
-			cmdinfo	= (ctg, 'Plugin: '+name, keys1, keys2)
-
-		cmdinfos += [cmdinfo]
-	if app_name=='CudaText':
-		cmdinfos = add_cud_plugins(cmdinfos, 'plugin: ', 'Plugins')
+			cmdinfos = add_cud_plugins(cmdinfos, 'plugin: ', 'Plugins')
 
 	for ctg, name, keys1, keys2 in cmdinfos:
 		if ctg not in ctgs:
