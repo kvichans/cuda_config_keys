@@ -2,7 +2,7 @@
 Authors:
 	Andrey Kvichansky    (kvichans on github)
 Version:
-	'1.1.1 2018-01-10'
+    '1.1.2 2018-02-08'
 '''
 #! /usr/bin/env python3
 
@@ -446,7 +446,8 @@ def get_str_report(parts='compact|conflicts'):
 #### Main ####
 class Command:
 	def report_to_html(self):
-		if app_name=='CudaText' and app.app_api_version()<'1.0.105':
+#		if app_name=='CudaText' and app.app_api_version()<'1.0.105':
+		if app_name=='CudaText' and app.app_api_version()<'1.0.212':     # depr PROC_GET_COMMAND, PROC_GET_COMMAND_PLUGIN
 			app.msg_box('Plugin needs newer app version', app.MB_OK)
 			return
 
@@ -456,6 +457,9 @@ class Command:
 		app.msg_status('Opened browser with file '+htm_file)
 
 	def compact_to_tab(self):
+		if app_name=='CudaText' and app.app_api_version()<'1.0.212':     # depr PROC_GET_COMMAND, PROC_GET_COMMAND_PLUGIN
+			app.msg_box('Plugin needs newer app version', app.MB_OK)
+			return
 		plain_rpt	= get_str_report()
 		if False:pass
 		elif app_name=='CudaText':

@@ -2,7 +2,7 @@
 Authors:
     Andrey Kvichansky    (kvichans on github)
 Version:
-    '1.1.1 2018-01-10'
+    '1.1.2 2018-02-08'
 '''
 #! /usr/bin/env python3
 
@@ -36,7 +36,8 @@ except ImportError as ex:
 
 class Command:    
     def dlg_config_keys(self):
-        if app.app_api_version()<'1.0.136':     # dlg_hotkey, PROC_GET_HOTKEY, PROC_SET_HOTKEY
+#       if app.app_api_version()<'1.0.136':     # dlg_hotkey, PROC_GET_HOTKEY, PROC_SET_HOTKEY
+        if app.app_api_version()<'1.0.212':     # depr PROC_GET_COMMAND, PROC_GET_COMMAND_PLUGIN
             return app.msg_status(_('Need update CudaText'))
         dlg_config_keys()
        #def dlg_config_keys
@@ -73,6 +74,8 @@ def dlg_config_keys():
                 +c13+_(' · Use "_" for key-name boundary.') \
                 +c13+_('   "_f" selects "F1" and "Ctrl+F" but not "Left".')
     scnd_h      = _('Suitable command snips will match specified string.') \
+                +c13+_('Usage:') \
+                +c13+_(' · Type "/" and snip string and push Tab-key.') \
                 +c13+_('Tips:') \
                 +c13+_(' · Use ? for any character and * for any fragment.')
     addk_h      = _('Set hotkey for command (if no one).'
@@ -140,6 +143,7 @@ def dlg_config_keys():
                  +[dict(cid='kcnd',tp='ed'  ,t=5+20     ,l=lfk1 ,w=120                                              )] #
                 +([] if not sndt else []
                  +[dict(           tp='lb'  ,tid='orsn' ,l=lfsn ,w=50   ,cap=_('In &Snip(s):')          ,hint=scnd_h)] # &s
+                 +[dict(cid='shlp',tp='bt'  ,tid='orsn' ,l=lfsn+80,w=20 ,cap=_('&?')                                )] # &?
                  +[dict(cid='scnd',tp='ed'  ,t=5+20     ,l=lfsn ,w=100                                              )] #
                 )
                  +[dict(cid='lwks',tp='lvw' ,t=5+50     ,l=5    ,w=LST_W,h=LST_H  ,items=itms   ,props='1'          )] #     grid
@@ -265,6 +269,9 @@ def dlg_config_keys():
             for snp in snp_l:
                 sndt.free(snp)
                 
+        elif btn=='shlp'            and sndt:
+            app.msg_box(sndt.snip_help, app.MB_OK)
+
         elif btn=='asnp' and cmd_id and sndt:
             cnm     = sndt.get_name(cmd_id)
             new_sn  = app.dlg_input(f(_('Add snip for "{}"'), cnm), '') 
@@ -322,7 +329,7 @@ def collect_keys():
 
     cmdinfos    = []
     pass;                      #LOG and log('app.app_api_version()={}',(app.app_api_version()))
-    if app.app_api_version()>='1.0.212':
+    if True: # app.app_api_version()>='1.0.212':
         lcmds   = app.app_proc(app.PROC_GET_COMMANDS, '')
         cmdinfos= [('Commands'
                    ,cmd['name']
@@ -341,47 +348,47 @@ def collect_keys():
                         if cmd['type']!='lexer'
                 ]
         pass;                  #LOG and log('call PROC_GET_COMMANDS',())
-    if app.app_api_version()<'1.0.212':
-        # Core cmds
-        pass;                  #LOG and open(r'py\cuda_config_keys\t.log', 'w')
-        for n in itertools.count():
-            # 5      ,'smth', 'Shift+Ctrl+F1', 'Alt+Q * Ctrl+T'
-            cmdinfo = app.app_proc(app.PROC_GET_COMMAND, str(n))
-            if cmdinfo is None:             break       #for n
-            if cmdinfo[0]<=0:               continue    #for n
-            # Add default category
-            cmdinfo = ('Commands', cmdinfo[1], cmdinfo[2], cmdinfo[3], cmdinfo[0])
-
-            ctg, name, keys1, keys2, cid = cmdinfo
-            if name.endswith(r'\-'):        continue#for n      # command for separator in menu
-            if name.startswith('lexer:'):   continue#for n      # ?? lexer? smth-more?
-            if name.startswith('plugin:'):  continue#for n      # ?? plugin? smth-more?
-
-            pass;              #LOG and open(r'py\cuda_config_keys\t.log', 'a').write(pf(('cmd', n, cmdinfo))+'\n')
-            cmdinfos += [cmdinfo]
-           #for n
-    
-        # Plugin cmds
-        for n in itertools.count():
-            if not    app.app_proc(app.PROC_GET_COMMAND_PLUGIN, str(n)): break#for n
-            (cap
-            ,modul
-            ,meth
-            ,par
-            ,lxrs)  = app.app_proc(app.PROC_GET_COMMAND_PLUGIN, str(n))
-            if cap.endswith(r'\-'):         continue#for n      # command for separator in menu
-            pass;             #LOG and open(r'py\cuda_config_keys\t.log', 'a').write(pf(('plg', n, (cap,modul,meth,par,lxrs)))+'\n')
-            plug_id = modul+','+meth+(','+par if par else '')
-            dct_keys= keys.get(plug_id, {})
-        
-            cmdinfos += [('Plugins'
-                        , 'plugin: '+cap.replace('&', '').replace('\\', ': ')
-                        , ' * '.join(dct_keys.get('s1', []))
-                        , ' * '.join(dct_keys.get('s2', []))
-                        , f('{},{},{}', modul, meth, par).rstrip(',')
-                        )]
-           #for n
-        pass;                  #LOG and log('call PROC_GET_COMMAND_PLUGIN',())
+#   if app.app_api_version()<'1.0.212':
+#       # Core cmds
+#       pass;                  #LOG and open(r'py\cuda_config_keys\t.log', 'w')
+#       for n in itertools.count():
+#           # 5      ,'smth', 'Shift+Ctrl+F1', 'Alt+Q * Ctrl+T'
+#           cmdinfo = app.app_proc(app.PROC_GET_COMMAND, str(n))
+#           if cmdinfo is None:             break       #for n
+#           if cmdinfo[0]<=0:               continue    #for n
+#           # Add default category
+#           cmdinfo = ('Commands', cmdinfo[1], cmdinfo[2], cmdinfo[3], cmdinfo[0])
+#
+#           ctg, name, keys1, keys2, cid = cmdinfo
+#           if name.endswith(r'\-'):        continue#for n      # command for separator in menu
+#           if name.startswith('lexer:'):   continue#for n      # ?? lexer? smth-more?
+#           if name.startswith('plugin:'):  continue#for n      # ?? plugin? smth-more?
+#
+#           pass;              #LOG and open(r'py\cuda_config_keys\t.log', 'a').write(pf(('cmd', n, cmdinfo))+'\n')
+#           cmdinfos += [cmdinfo]
+#          #for n
+#   
+#       # Plugin cmds
+#       for n in itertools.count():
+#           if not    app.app_proc(app.PROC_GET_COMMAND_PLUGIN, str(n)): break#for n
+#           (cap
+#           ,modul
+#           ,meth
+#           ,par
+#           ,lxrs)  = app.app_proc(app.PROC_GET_COMMAND_PLUGIN, str(n))
+#           if cap.endswith(r'\-'):         continue#for n      # command for separator in menu
+#           pass;             #LOG and open(r'py\cuda_config_keys\t.log', 'a').write(pf(('plg', n, (cap,modul,meth,par,lxrs)))+'\n')
+#           plug_id = modul+','+meth+(','+par if par else '')
+#           dct_keys= keys.get(plug_id, {})
+#       
+#           cmdinfos += [('Plugins'
+#                       , 'plugin: '+cap.replace('&', '').replace('\\', ': ')
+#                       , ' * '.join(dct_keys.get('s1', []))
+#                       , ' * '.join(dct_keys.get('s2', []))
+#                       , f('{},{},{}', modul, meth, par).rstrip(',')
+#                       )]
+#          #for n
+#       pass;                  #LOG and log('call PROC_GET_COMMAND_PLUGIN',())
     pass;                      #LOG and log('app.app_api_version()={}',(app.app_api_version()))
     return cmdinfos
    #def collect_keys

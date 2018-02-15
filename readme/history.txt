@@ -1,3 +1,7 @@
+1.1.2 (2018-02-08)
+fixed: skip deprecated API
+added: help for snips
+
 1.1.1 (2018-01-10)
 fixed: skip deprecated API
 
