@@ -1,8 +1,8 @@
-﻿''' Plugin for CudaText editor
+''' Plugin for CudaText editor
 Authors:
     Andrey Kvichansky    (kvichans on github)
 Version:
-    '1.1.2 2018-02-08'
+    '1.1.3 2018-02-19'
 '''
 #! /usr/bin/env python3
 
@@ -85,6 +85,7 @@ def dlg_config_keys():
     trpt_h      = _('Show compact report of hotkeys in new tab.'
                   '\rThe report is usefull to find free hotkeys.')
     cpnm_h      = _('Copy command name to clipboard')
+    open_h      = _('Open source of plugin code')
     reND    = re.compile(r'\W')
     def is_cond4snps(cond, sns_l):
         if not cond:    return  True
@@ -148,7 +149,12 @@ def dlg_config_keys():
                 )
                  +[dict(cid='lwks',tp='lvw' ,t=5+50     ,l=5    ,w=LST_W,h=LST_H  ,items=itms   ,props='1'          )] #     grid
                 
-                 +[dict(cid='cpnm',tp='bt'  ,t=DLG_H-60 ,l=5+5  ,w=110  ,cap=_('Copy &name')            ,hint=cpnm_h)] # &n 
+                 +[dict(cid='cpnm',tp='bt'  ,t=DLG_H-60 ,l=5+5  ,w=110  ,cap=_('Copy &name')            ,hint=cpnm_h)] # &n
+                +([] if not apx.get_opt('config_keys_with_open', False) else []
+                 +[dict(cid='open',tp='bt'  ,t=DLG_H-30 ,l=5+5  ,w=110  ,cap=_('Open code &#')          ,hint=open_h)] # &#
+                )
+                 +[dict(cid='hrpt',tp='bt'  ,t=DLG_H-60 ,l=130  ,w=150  ,cap=_('Report to HT&ML')       ,hint=hrpt_h)] # &m
+                 +[dict(cid='trpt',tp='bt'  ,t=DLG_H-30 ,l=130  ,w=150  ,cap=_('Report to &Tab')        ,hint=trpt_h)] # &t
                  +[dict(cid='add1',tp='bt'  ,t=DLG_H-60 ,l=lfk1 ,w=150  ,cap=_('Set/Add Hotkey-&1')     ,hint=addk_h)] # &1
                  +[dict(cid='del1',tp='bt'  ,t=DLG_H-30 ,l=lfk1 ,w=150  ,cap=_('Remove Hotkey-1 &!')                )] # &!
                  +[dict(cid='add2',tp='bt'  ,t=DLG_H-60 ,l=lfk2 ,w=150  ,cap=_('Set/Add Hotkey-&2')     ,hint=addk_h)] # &2
@@ -157,8 +163,8 @@ def dlg_config_keys():
                  +[dict(cid='asnp',tp='bt'  ,t=DLG_H-60 ,l=lfsn ,w=150  ,cap=_('Set/A&dd Snip')                     )] # &d
                  +[dict(cid='rsnp',tp='bt'  ,t=DLG_H-30 ,l=lfsn ,w=150  ,cap=_('R&emove Snip(s)')                   )] # &e
                 )
-                 +[dict(cid='hrpt',tp='bt'  ,t=DLG_H-120,l=lrpt ,w=100  ,cap=_('In HT&ML')              ,hint=hrpt_h)] # &m 
-                 +[dict(cid='trpt',tp='bt'  ,t=DLG_H-90 ,l=lrpt ,w=100  ,cap=_('In &Tab')               ,hint=trpt_h)] # &t
+#                +[dict(cid='hrpt',tp='bt'  ,t=DLG_H-120,l=lrpt ,w=100  ,cap=_('In HT&ML')              ,hint=hrpt_h)] # &m 
+#                +[dict(cid='trpt',tp='bt'  ,t=DLG_H-90 ,l=lrpt ,w=100  ,cap=_('In &Tab')               ,hint=trpt_h)] # &t
                  +[dict(cid='help',tp='bt'  ,t=DLG_H-60 ,l=lrpt ,w=100  ,cap=_('Hel&p')                             )] # &p 
                  +[dict(cid='-'   ,tp='bt'  ,t=DLG_H-30 ,l=lrpt ,w=100  ,cap=_('Close')                             )] #  
                 )
@@ -207,6 +213,36 @@ def dlg_config_keys():
             do_report(htm_file)
             webbrowser.open_new_tab('file://'+htm_file)
             app.msg_status(_('Opened browser with file ')+htm_file)
+        
+        elif btn=='open' and cmd_id:
+            pass;               LOG and log('cmd_id={}',(cmd_id))
+            if type(cmd_id)!=str:   continue#while
+            plug_mdl,   \
+            plug_mth    = cmd_id.split(',')[0:2]
+            plug_mth    = 'def '+ plug_mth + '(self):'
+            plug_dir    = app.app_path(app.APP_DIR_PY)+os.sep+plug_mdl
+            plug_py     = plug_dir+os.sep+'__init__.py'
+            plug_body   = open(plug_py, encoding='UTF-8').read()
+            pass;               LOG and log('plug_mdl,plug_mth,plug_dir,plug_py={}',(plug_mdl,plug_mth,plug_dir,plug_py))
+            mch         = re.search(r'from\s+\.(\w+)\s+import\s+Command', plug_body)
+            if mch:
+                # from .other_py import Command
+                plug_py = plug_dir+os.sep+mch.group(1)+'.py'
+                pass;           LOG and log('plug_py={}',(plug_py))
+                plug_body=open(plug_py, encoding='UTF-8').read()
+            if plug_mth not in plug_body:   continue#while
+            # Open
+            app.file_open(plug_py)
+            # Locate
+            user_opt= app.app_proc(app.PROC_GET_FIND_OPTIONS, '')
+            ed.cmd(cmds.cmd_FinderAction, chr(1).join([]
+                +['findnext']
+                +[plug_mth]
+                +['']
+                +['fa']
+            ))
+            app.app_proc(app.PROC_SET_FIND_OPTIONS, user_opt)
+            break#while
         
         elif btn=='cpnm' and cmd_id:
             cmd_nkk = id2nkks[cmd_id]
