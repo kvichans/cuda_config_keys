@@ -1,3 +1,11 @@
+2.1.1 (2018-03-01)
+added: version in title
+fixed: no flickers (dlg_custom -> dlg_proc)
+fixed: not full list if [x]OR and empty one of two filters
+
+1.1.4 (2018-02-28)
+added: count of filtered/asigned hotkeys-1/hotkeys-2/snips
+
 1.1.3 (2018-02-19)
 fixed: rename buttons to "Report to HTML", "Report to Tab"
 added: button "Open code" to open source of plugin method (show if "config_keys_with_open":true)
