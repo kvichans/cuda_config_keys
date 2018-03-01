@@ -1,3 +1,6 @@
+2.1.2 (2018-03-01)
+added: sort by click on headers
+
 2.1.1 (2018-03-01)
 added: version in title
 fixed: no flickers (dlg_custom -> dlg_proc)

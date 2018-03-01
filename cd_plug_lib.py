@@ -959,12 +959,8 @@ class BaseDlgAgent:
         return new_val
        #def _take_val
 
-    def _prepare_c_pr(self, name, cfg_ctrl, opts={}):
-        pass;                  #log('name, cfg_ctrl={}',(name, cfg_ctrl))
-        c_pr    = {k:v for (k,v) in cfg_ctrl.items() if k not in ['call', 'bind', 'items', 'val']}
-        c_pr['name'] = name
+    def _prepare_in_vs(self, c_pr, cfg_ctrl, opts={}):
         tp      = cfg_ctrl['type']
-
         if 'val' in cfg_ctrl        and opts.get('prepare val', True):
             in_val  = cfg_ctrl['val']
             if False:pass
@@ -998,6 +994,17 @@ class BaseDlgAgent:
                 # For combo, combo_ro, listbox, checkgroup, radiogroup, checklistbox: "\t"-separated lines
                 items   = '\t'.join(items)
             c_pr['items']   = items
+
+        return c_pr
+       #def _prepare_in_vs
+
+    def _prepare_c_pr(self, name, cfg_ctrl, opts={}):
+        pass;                  #log('name, cfg_ctrl={}',(name, cfg_ctrl))
+        c_pr    = {k:v for (k,v) in cfg_ctrl.items() if k not in ['call', 'bind', 'items', 'val']}
+        c_pr['name'] = name
+        tp      = cfg_ctrl['type']
+
+        c_pr    = self._prepare_in_vs(c_pr, cfg_ctrl, opts)
 
         if cfg_ctrl.get('bind'):
             self.binds[name]    = cfg_ctrl['bind']
@@ -1073,7 +1080,10 @@ class BaseDlgAgent:
             prC = dlg_proc_wpr(self.id_dlg, app.DLG_CTL_PROP_GET, index=idC)
 #           prC = app.dlg_proc(self.id_dlg, app.DLG_CTL_PROP_GET, index=idC)
             name = prC['name']
-            prC.update({k:v for k,v in self.ctrls[name].items() if k not in ('callback','call')})
+#           prC.update({k:v for k,v in self.ctrls[name].items() if k not in ('callback','call')})
+            c_pr = self.ctrls[name]
+            c_pr = self._prepare_in_vs(c_pr, c_pr)
+            prC.update({k:v for k,v in c_pr.items() if k not in ('callback','call')})
             srp+=l+f('idc=dlg_proc(idd, DLG_CTL_ADD,"{}")', prC['type'])
             srp+=l+f('dlg_proc(idd, DLG_CTL_PROP_SET, index=idc, prop={})', repr(prC))
         prD     = dlg_proc_wpr(self.id_dlg, app.DLG_PROP_GET)

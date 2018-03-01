@@ -2,7 +2,7 @@
 Authors:
     Andrey Kvichansky    (kvichans on github)
 Version:
-    '2.1.1 2018-03-01'
+    '2.1.2 2018-03-01'
 '''
 #! /usr/bin/env python3
 
@@ -489,8 +489,10 @@ class CfgKeysDlg():
     def __init__(self):
         m,M         = self,CfgKeysDlg
 
+        m.sort      = ('', True)
         m.cmd_id    = ''
         m.ccnd      = ''
+        pass;                  #m.ccnd      = 'stop'
         m.kcnd      = ''
         m.scnd      = ''
         m.orcn      = False
@@ -506,10 +508,8 @@ class CfgKeysDlg():
     
     def show(self):
         m,M         = self,CfgKeysDlg
-        pass;                   LOG and log('',())
-#       pass;                   return 
 #       self.pre_cnts()
-        DlgAgent(
+        m.ag    = DlgAgent(
             form =dict(cap     = 'Config Hotkeys ('+VERSION_V+')'
                       ,resize  = False                              ##!!
                       ,w       = M.DLG_W
@@ -518,10 +518,11 @@ class CfgKeysDlg():
         ,   ctrls=self.get_cnts()
         ,   vals =self.get_vals()
         ,   fid  =m.fid
-        ,   options = {
-                              #,'gen_repro_to_file':'repro_dlg_cfg_keys.py'
-                    }
-        ).show()
+                            ,   options = {
+                               #'gen_repro_to_file':'repro_dlg_cfg_keys.py',
+                                }
+        )
+        m.ag.show()
        #def show
     
     def get_cnts(self, what=''):
@@ -569,17 +570,22 @@ class CfgKeysDlg():
 #                                 ,(not ccnd_u or               test_cond(ccnd_u, nm))
 #                                 ,(not kcnd_u or               test_cond(kcnd_u, k1, k2, 'keys'))
 #                                 ,(not m.scnd or not sndt   or is_cond4snps(m.scnd, sns)) )]
-        stat_c  = f(' ({}/{})',len(fl_NKKISs), len(nkkis_l))
-        stat_k1 = f(' ({}/{})',sum(1 if k1  else 0 for (nm, k1, k2, id, sns) in fl_NKKISs)
-                              ,sum(1 if k1  else 0 for (nm, k1, k2, id, sns) in nkkis_l))
+        sort_n  = apx.icase(m.sort[0]=='nm',0, m.sort[0]=='k1',1, m.sort[0]=='k2',2, m.sort[0]=='sn',4, 0)   # index in item of fl_NKKISs
+        sort_c  = '' if not m.sort[0] else ' ▲' if m.sort[1] else ' ▼'
+        if m.sort[0]: 
+            fl_NKKISs   = sorted(fl_NKKISs, key=lambda mkkis:mkkis[sort_n], reverse=m.sort[1])
+        stat_c  = f(' ({}/{})',len(fl_NKKISs), len(nkkis_l))                                + (sort_c if m.sort[0]=='nm' else '')
+        stat_k1 = f(' ({}/{})',sum(1 if k1  else 0 for (nm, k1, k2, id, sns) in fl_NKKISs)  
+                              ,sum(1 if k1  else 0 for (nm, k1, k2, id, sns) in nkkis_l))   + (sort_c if m.sort[0]=='k1' else '')
         stat_k2 = f(' ({}/{})',sum(1 if k2  else 0 for (nm, k1, k2, id, sns) in fl_NKKISs)
-                              ,sum(1 if k2  else 0 for (nm, k1, k2, id, sns) in nkkis_l))
+                              ,sum(1 if k2  else 0 for (nm, k1, k2, id, sns) in nkkis_l))   + (sort_c if m.sort[0]=='k2' else '')
         stat_s  = f(' ({}/{})',sum(1 if sns else 0 for (nm, k1, k2, id, sns) in fl_NKKISs)
-                              ,sum(1 if sns else 0 for (nm, k1, k2, id, sns) in nkkis_l))
+                              ,sum(1 if sns else 0 for (nm, k1, k2, id, sns) in nkkis_l))   + (sort_c if m.sort[0]=='sn' else '')
         m.fl_Is = [id         for (nm, k1, k2, id, sn) in fl_NKKISs ]   ##!!
-        itms    = (zip([_('Command')+stat_c, _('Hotkey-1')+stat_k1, _('Hotkey-2')+stat_k2, _('Snips')+stat_s], map(str, M.COL_WS))
-                  ,    [ (nm,                 k1,             k2,          ', '.join(sns)) 
-                        for  (nm, k1, k2, id, sns) in fl_NKKISs ])
+        itms    = (list(zip([_('Command')+stat_c, _('Hotkey-1')+stat_k1, _('Hotkey-2')+stat_k2, _('Snips')+stat_s], map(str, M.COL_WS)))
+                  ,         [ (nm,                 k1,             k2,          ', '.join(sns)) 
+                                for  (nm, k1, k2, id, sns) in fl_NKKISs ]
+                  )
         if what=='lwks':
             return [('lwks',dict(items=itms))]
 
@@ -596,9 +602,15 @@ class CfgKeysDlg():
  ,('scn_',dict(tp='lb'  ,tid='orsn'     ,l=M.lfsn   ,w=50   ,cap=_('In &Snips:')        ,hint=M.scnd_h  ,vis=sndt_b                 )) # &s
  ,('shlp',dict(tp='bt'  ,tid='orsn'     ,l=M.lfsn+80,w=20   ,cap=_('&?')                                ,vis=sndt_b ,call=m.do_shlp )) # &?
  ,('scnd',dict(tp='ed'  ,t=5+20         ,l=M.lfsn   ,w=100                                              ,vis=sndt_b                 )) #
-                                                                                                                            
- ,('lwks',dict(tp='lvw' ,t=5+50         ,l=5        ,w=M.LST_W,h=M.LST_H    ,items=itms ,props='1'                                  )) #     grid
-                                                                                                                            
+                                                                                                                                    
+ ,('srt0',dict(tp='bt'  ,t  =0          ,l=1000     ,w=0    ,cap=_('&1')    ,sto=F                                  ,call=m.do_sort ))# &1
+ ,('srt1',dict(tp='bt'  ,t  =0          ,l=1000     ,w=0    ,cap=_('&2')    ,sto=F                                  ,call=m.do_sort ))# &2
+ ,('srt2',dict(tp='bt'  ,t  =0          ,l=1000     ,w=0    ,cap=_('&3')    ,sto=F                                  ,call=m.do_sort ))# &3
+ ,('srt3',dict(tp='bt'  ,t  =0          ,l=1000     ,w=0    ,cap=_('&4')    ,sto=F                      ,vis=sndt_b ,call=m.do_sort ))# &4
+ ,('lwks',dict(tp='lvw' ,t=5+50         ,l=5        ,w=M.LST_W,h=M.LST_H    ,items=itms ,props='1'                                  
+#                                                               ,on_click_header=lambda idd, idc, data:print('lwks',data) )) #     grid
+                                                                ,on_click_header=lambda idd, idc, data:m.wn_sort(data) )) #     grid
+                                                                                                                                    
  ,('cpnm',dict(tp='bt'  ,t=M.DLG_H-60   ,l=5+5      ,w=110  ,cap=_('Copy &name')        ,hint=M.cpnm_h              ,call=m.do_code )) # &n
  ,('open',dict(tp='bt'  ,t=M.DLG_H-30   ,l=5+5      ,w=110  ,cap=_('Open code &#')      ,hint=M.open_h              ,call=m.do_code )) # &#
  ,('hrpt',dict(tp='bt'  ,t=M.DLG_H-60   ,l=130      ,w=150  ,cap=_('Report to HT&ML')   ,hint=M.hrpt_h              ,call=m.do_rprt )) # &m
@@ -715,6 +727,37 @@ class CfgKeysDlg():
             return None #break#while
         return []
        #def do_code
+    
+    def wn_sort(self, col):
+        pass;                  #LOG and log('col={}',(col))
+        m,M         = self,CfgKeysDlg
+
+        col_s       = 'nm' if col==0 else \
+                      'k1' if col==1 else \
+                      'k2' if col==2 else \
+                      'sn'
+        srt_s       = m.sort[0]
+        m.sort      = (col_s, False)                            \
+                        if not srt_s                      else  \
+                      (col_s, False)                            \
+                        if srt_s!=col_s                   else  \
+                      (srt_s, True)                             \
+                        if srt_s==col_s and not m.sort[1] else  \
+                      ('', True)
+        pass;                  #LOG and log('m.sort={}',(m.sort))
+        lwks_n      = m.ag.cval('lwks')
+        m.cmd_id    = '' if lwks_n==-1 else m.fl_Is[lwks_n]
+        lwks_its_v  = odict(self.get_cnts('lwks'))
+        lwks_its_v['lwks'].update(self.get_vals('lwks'))      ##!! :(
+        m.ag.update(
+                    ctrls=lwks_its_v
+                )
+        return []
+       #def wn_sort
+    
+    def do_sort(self, aid, ag):
+        return self.wn_sort(int(aid[3]))    # srtN
+       #def do_sort
     
     def do_fltr(self, aid, ag):
         m,M         = self,CfgKeysDlg
