@@ -959,7 +959,7 @@ class BaseDlgAgent:
         return new_val
        #def _take_val
 
-    def _prepare_in_vs(self, c_pr, cfg_ctrl, opts={}):
+    def _prepare_it_vl(self, c_pr, cfg_ctrl, opts={}):
         tp      = cfg_ctrl['type']
         if 'val' in cfg_ctrl        and opts.get('prepare val', True):
             in_val  = cfg_ctrl['val']
@@ -996,7 +996,7 @@ class BaseDlgAgent:
             c_pr['items']   = items
 
         return c_pr
-       #def _prepare_in_vs
+       #def _prepare_it_vl
 
     def _prepare_c_pr(self, name, cfg_ctrl, opts={}):
         pass;                  #log('name, cfg_ctrl={}',(name, cfg_ctrl))
@@ -1004,7 +1004,7 @@ class BaseDlgAgent:
         c_pr['name'] = name
         tp      = cfg_ctrl['type']
 
-        c_pr    = self._prepare_in_vs(c_pr, cfg_ctrl, opts)
+        c_pr    = self._prepare_it_vl(c_pr, cfg_ctrl, opts)
 
         if cfg_ctrl.get('bind'):
             self.binds[name]    = cfg_ctrl['bind']
@@ -1074,22 +1074,62 @@ class BaseDlgAgent:
     def _gen_repro_code(self, rerpo_fn):
         # Repro-code
         l       = '\n'
+        cattrs  = [  ('type', 'name', 'tag')
+                    ,('x', 'y', 'w', 'h', 'cap', 'hint')
+                    ,('en', 'vis', 'focused', 'tab_stop', 'tab_order'
+                     ,'props', 'ex0', 'ex1', 'ex2', 'ex3', 'ex4', 'ex5', 'ex6', 'ex7', 'ex8', 'ex9'
+                     ,'sp_l', 'sp_r', 'sp_t', 'sp_b', 'sp_a', 'a_l', 'a_r', 'a_t', 'a_b', 'align')
+                    ,('val', 'items')
+                    ,('tp', 't', 'b', 'l', 'r', 'tid', 'a')
+                    ]
+        fattrs  = [  ('x', 'y', 'w', 'h', 'cap', 'tag')
+                    ,('resize', 'w_min', 'w_max', 'h_min', 'h_max')
+                    ,('vis', 'keypreview')
+                    ]
+        def out_attrs(pr, attrs, out=''):
+            pr          = pr.copy()
+            out         += '{'
+            afix        = ''
+            for ats in attrs:
+                apr     =   {k:pr.pop(k) for k in ats if k in pr}
+                if apr:
+                    out += afix + ', '.join(repr(k) + ':' + repr(apr[k]) for k in ats if k in apr)
+                    afix= '\n,'
+            apr =           {k:pr.pop(k) for k in pr.copy() if k[0:3]!='on_'}
+            if apr:
+                out     += afix + repr(apr).strip('{}') 
+            for k in pr:
+#               pr  = {k:(lambda idd,idc,data:print(repr(k))) for k in pr}
+                out     += afix + f('"{}":(lambda idd,idc,data:print("{}"))', k, k)
+            out         += '}'
+            return out
         srp     =    ''
         srp    +=    'idd=dlg_proc(0, DLG_CREATE)'
         for idC in range(app.dlg_proc(self.id_dlg, app.DLG_CTL_COUNT)):
             prC = dlg_proc_wpr(self.id_dlg, app.DLG_CTL_PROP_GET, index=idC)
+            if True:                                        prC.pop('act', None)
+            if ''==prC.get('hint', ''):                     prC.pop('hint', None)
+            if ''==prC.get('tag', ''):                      prC.pop('tag', None)
+            if ''==prC.get('items', None):                  prC.pop('items')
+            if prC['type'] in ('label','bevel'):            (prC.pop('tab_stop', None),prC.pop('tab_order', None))
+            if prC['type'] in ('label','bevel','button'):   prC.pop('val', None)
+            if not prC.get('focused', False):               prC.pop('focused', None)
+            if prC.get('vis', True):                        prC.pop('vis', None)
+            if prC.get('en', True):                         prC.pop('en', None)
 #           prC = app.dlg_proc(self.id_dlg, app.DLG_CTL_PROP_GET, index=idC)
             name = prC['name']
 #           prC.update({k:v for k,v in self.ctrls[name].items() if k not in ('callback','call')})
             c_pr = self.ctrls[name]
-            c_pr = self._prepare_in_vs(c_pr, c_pr)
+            c_pr = self._prepare_it_vl(c_pr, c_pr)
             prC.update({k:v for k,v in c_pr.items() if k not in ('callback','call')})
             srp+=l+f('idc=dlg_proc(idd, DLG_CTL_ADD,"{}")', prC['type'])
-            srp+=l+f('dlg_proc(idd, DLG_CTL_PROP_SET, index=idc, prop={})', repr(prC))
+            srp+=l+f('dlg_proc(idd, DLG_CTL_PROP_SET, index=idc, prop={})', out_attrs(prC, cattrs))
+#           srp+=l+f('dlg_proc(idd, DLG_CTL_PROP_SET, index=idc, prop={})', repr(prC))
         prD     = dlg_proc_wpr(self.id_dlg, app.DLG_PROP_GET)
 #       prD     = app.dlg_proc(self.id_dlg, app.DLG_PROP_GET)
         prD.update(self.form)
-        srp    +=l+f('dlg_proc(idd, DLG_PROP_SET, prop={})', repr(prD))
+        srp    +=l+f('dlg_proc(idd, DLG_PROP_SET, prop={})', out_attrs(prD, fattrs))
+#       srp    +=l+f('dlg_proc(idd, DLG_PROP_SET, prop={})', repr(prD))
         srp    +=l+f('dlg_proc(idd, DLG_CTL_FOCUS, name="{}")', prD['focused'])
         srp    +=l+  'dlg_proc(idd, DLG_SHOW_MODAL)'
         srp    +=l+  'dlg_proc(idd, DLG_FREE)'
@@ -1118,7 +1158,11 @@ class BaseDlgAgent:
             fm_key  = key4store if key4store else get_form_key(form)
             pass;              #log('fm_key={}',(fm_key))
             if fm_key not in stores:    return form
-            form.update(stores[fm_key])
+            prev    = stores[fm_key]
+            if not form.get('resize', False):
+                prev.pop('w', None)
+                prev.pop('h', None)
+            form.update(prev)
             pass;              #log('!upd form={}',(form))
             return form
         
@@ -1379,14 +1423,16 @@ class DlgAgent(BaseDlgAgent):
 
     EXTRA_C_ATTRS   = ['tp','l','t','r','b','tid','a','aid']
     def _prepare_c_pr(self, cid, cfg_ctrl, opts={}):
-        pass;                  #log('cid, cfg_ctrl={}',(cid, cfg_ctrl))
+        pass;                  #log('cid, cfg_ctrl={}',(cid, cfg_ctrl))         if cid in ['fltr'] else 0
 #       cid     = cfg_ctrl['cid']
         tp      = cfg_ctrl['type']  # reduced
         DlgAgent._preprocessor(cfg_ctrl, tp)                                # sto -> tab_stop, ... -> props
+        pass;                  #log('cid, cfg_ctrl={}',(cid, cfg_ctrl))         if cid in ['fltr'] else 0
         c_pr    = super()._prepare_c_pr(cid
                     , {k:v for k,v in cfg_ctrl.items() if k not in DlgAgent.EXTRA_C_ATTRS}
                     , {'prepare call':False})                               # items -> items, val -> val
         c_pr.update(self._prep_pos_attrs(cfg_ctrl, cid, opts.get('ctrls')))                    # l,r,t,b,tid -> x,y,w,h
+        pass;                  #log('cid, c_pr={}',(cid, c_pr))                 if cid in ['fltr'] else 0
         pass;                  #log('c_pr={}',(c_pr))
 
         if callable(cfg_ctrl.get('call')):
@@ -1409,6 +1455,7 @@ class DlgAgent(BaseDlgAgent):
             c_pr['on_change']= da_c_callbk
            #if callable
         
+        pass;                  #log('cid, c_pr={}',(cid, c_pr))                 if cid in ['fltr'] else 0
         return c_pr
        #def _prepare_c_pr
 

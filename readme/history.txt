@@ -1,3 +1,6 @@
+2.1.3 (2018-03-05)
+added: resizable dlg: height is free now
+
 2.1.2 (2018-03-01)
 added: sort by click on headers
 
