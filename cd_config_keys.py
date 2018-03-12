@@ -118,7 +118,7 @@ class CfgKeysDlg():
                   '\rThe report is usefull to find free hotkeys.')
     cpnm_h      = _('Copy command name to clipboard')
     open_h      = _('Open source of plugin code')
-    sort_h      = _('Sort data by click on table header or by hotkeys Alt+1, Alt+2, Alt+3'
+    sort_h      = _('Sort data by click on table header' # or by hotkeys Alt+1, Alt+2, Alt+3'
                   '\r3-stage loop of sorting:'
                   '\r · in alphabetical order,'
                   '\r · in reverse alphabetical order,'
@@ -212,7 +212,8 @@ class CfgKeysDlg():
         sort_n  = apx.icase(m.sort[0]=='nm',0, m.sort[0]=='k1',1, m.sort[0]=='k2',2, m.sort[0]=='sn',4, 0)   # index in item of fl_NKKISs
         sort_c  = '' if not m.sort[0] else ' ▲' if m.sort[1] else ' ▼'
         if m.sort[0]: 
-            fl_NKKISs   = sorted(fl_NKKISs, key=lambda mkkis:mkkis[sort_n], reverse=m.sort[1])
+            fl_NKKISs   = sorted(fl_NKKISs, key=lambda mkkis:('_' if not mkkis[sort_n] and not m.sort[1] else mkkis[sort_n]), reverse=m.sort[1])
+#           fl_NKKISs   = sorted(fl_NKKISs, key=lambda mkkis:mkkis[sort_n], reverse=m.sort[1])
         stat_c  = f(' ({}/{})',len(fl_NKKISs), len(nkkis_l))                                + (sort_c if m.sort[0]=='nm' else '')
         stat_k1 = f(' ({}/{})',sum(1 if k1  else 0 for (nm, k1, k2, id, sns) in fl_NKKISs)  
                               ,sum(1 if k1  else 0 for (nm, k1, k2, id, sns) in nkkis_l))   + (sort_c if m.sort[0]=='k1' else '')
@@ -242,10 +243,10 @@ class CfgKeysDlg():
  ,('shlp',dict(tp='bt'  ,tid='orsn'     ,l=M.lfsn+80,w=20   ,cap=_('&?')                                ,vis=sndt_b ,call=m.do_shlp )) # &?
  ,('scnd',dict(tp='ed'  ,t=5+20         ,l=M.lfsn   ,w=100                                              ,vis=sndt_b                 )) #
                                                                                                                                     
- ,('srt0',dict(tp='bt'  ,t  =0          ,l=1000     ,w=0    ,cap=_('&1')    ,sto=F                                  ,call=m.do_sort ))# &1
- ,('srt1',dict(tp='bt'  ,t  =0          ,l=1000     ,w=0    ,cap=_('&2')    ,sto=F                                  ,call=m.do_sort ))# &2
- ,('srt2',dict(tp='bt'  ,t  =0          ,l=1000     ,w=0    ,cap=_('&3')    ,sto=F                                  ,call=m.do_sort ))# &3
- ,('srt3',dict(tp='bt'  ,t  =0          ,l=1000     ,w=0    ,cap=_('&4')    ,sto=F                      ,vis=sndt_b ,call=m.do_sort ))# &4
+#,('srt0',dict(tp='bt'  ,t  =0          ,l=1000     ,w=0    ,cap=_('&1')    ,sto=F                                  ,call=m.do_sort ))# &1
+#,('srt1',dict(tp='bt'  ,t  =0          ,l=1000     ,w=0    ,cap=_('&2')    ,sto=F                                  ,call=m.do_sort ))# &2
+#,('srt2',dict(tp='bt'  ,t  =0          ,l=1000     ,w=0    ,cap=_('&3')    ,sto=F                                  ,call=m.do_sort ))# &3
+#,('srt3',dict(tp='bt'  ,t  =0          ,l=1000     ,w=0    ,cap=_('&4')    ,sto=F                      ,vis=sndt_b ,call=m.do_sort ))# &4
  ,('lwks',dict(tp='lvw' ,t=5+50         ,l=5        ,w=M.LST_W,h=M.LST_H    ,items=itms ,props='1'      ,a='tB'                     
                                                                 ,on_click_header=lambda idd, idc, data:m.wn_sort(data)              )) #     grid
                                                                                                                                     
