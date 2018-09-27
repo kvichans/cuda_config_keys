@@ -2,7 +2,7 @@
 Authors:
     Andrey Kvichansky    (kvichans on github)
 Version:
-    '2.1.3 2018-03-05'
+    '2.1.4 2018-09-26'
 '''
 #! /usr/bin/env python3
 
@@ -15,7 +15,7 @@ import  cudax_lib           as apx
 from    .cd_plug_lib    import *
 from    .cd_keys_report import *
 
-pass;                           LOG     = (-9==-9)  # Do or dont logging.
+pass;                           LOG     = (-9== 9)  # Do or dont logging.
 pass;                           from pprint import pformat
 pass;                           pf=lambda d:pformat(d,width=150)
 
@@ -356,14 +356,19 @@ class CfgKeysDlg():
             # Open
             app.file_open(plug_py)
             # Locate
-            user_opt= app.app_proc(app.PROC_GET_FIND_OPTIONS, '')
+            user_opt= app.app_proc(app.PROC_GET_FINDER_PROP, '') \
+                        if app.app_api_version()>='1.0.248' else \
+                      app.app_proc(app.PROC_GET_FIND_OPTIONS, '')   # Deprecated
             ed.cmd(cmds.cmd_FinderAction, chr(1).join([]
                 +['findnext']
                 +[plug_mth]
                 +['']
                 +['fa']
             ))
-            app.app_proc(app.PROC_SET_FIND_OPTIONS, user_opt)
+            if app.app_api_version()>='1.0.248':
+                app.app_proc(app.PROC_SET_FINDER_PROP, user_opt)
+            else:
+                app.app_proc(app.PROC_SET_FIND_OPTIONS, user_opt)   # Deprecated
             return None #break#while
         return []
        #def do_code
