@@ -2,7 +2,7 @@
 Authors:
     Andrey Kvichansky    (kvichans on github)
 Version:
-    '2.1.4 2018-09-26'
+    '2.1.5 2019-11-29'
 '''
 #! /usr/bin/env python3
 
@@ -62,7 +62,8 @@ def collect_keys():
                    ,cmd['key2']
                    ,cmd['cmd']
                    )
-                        if cmd['type']=='cmd' else 
+                        if cmd['type']!='plugin' else 
+#                       if cmd['type']=='cmd' else 
                    ('Plugins'
                    ,cmd['name']
                    ,cmd['key1']
@@ -127,7 +128,7 @@ class CfgKeysDlg():
     reND    = re.compile(r'\W')
 
     def __init__(self):
-        m,M         = self,CfgKeysDlg
+        m,M         = self,self.__class__
 
         m.sort      = ('', True)
         m.cmd_id    = ''
@@ -147,7 +148,7 @@ class CfgKeysDlg():
        #def __init__
     
     def show(self):
-        m,M         = self,CfgKeysDlg
+        m,M         = self,self.__class__
         m.ag    = DlgAgent(
             form =dict(cap     = 'Config Hotkeys ('+VERSION_V+')'
                       ,resize  = True                              ##!!
@@ -165,7 +166,7 @@ class CfgKeysDlg():
        #def show
     
     def get_cnts(self, what=''):
-        m,M         = self,CfgKeysDlg
+        m,M         = self,self.__class__
         open_src    = apx.get_opt('config_keys_with_open', False)
         sndt_b      = bool(sndt)
         def is_cond4snps(cond, sns_l):
@@ -266,7 +267,7 @@ class CfgKeysDlg():
        #def get_cnts
     
     def get_vals(self, what=''):
-        m,M         = self,CfgKeysDlg
+        m,M         = self,self.__class__
         lwks_n  = -1                                 \
                     if 0==len(m.fl_Is)          else \
                    0                                 \
@@ -286,8 +287,8 @@ class CfgKeysDlg():
         return vals
        #def get_vals
     
-    def do_rprt(self, aid, ag):
-        m,M         = self,CfgKeysDlg
+    def do_rprt(self, aid, ag, data=''):
+        m,M         = self,self.__class__
         if False:pass
         elif aid=='trpt':
             # Compact report to tab
@@ -303,8 +304,8 @@ class CfgKeysDlg():
         return []
        #def do_rprt
     
-    def do_shlp(self, aid, ag):
-        m,M         = self,CfgKeysDlg
+    def do_shlp(self, aid, ag, data=''):
+        m,M         = self,self.__class__
         DW, DH      = 500-2*GAP, 500-2*GAP
         dlg_wrapper(_('Help for "Config Hotkeys"'), 500, 500,
              [dict(cid='htxt',tp='me'    ,t=GAP  ,h=DH-28,l=GAP          ,w=DW   ,props='1,0,1'  ) #  ro,mono,border
@@ -323,8 +324,8 @@ class CfgKeysDlg():
         return []
        #def do_shlp
     
-    def do_code(self, aid, ag):
-        m,M         = self,CfgKeysDlg
+    def do_code(self, aid, ag, data=''):
+        m,M         = self,self.__class__
         
         lwks_n  = ag.cval('lwks')
         if lwks_n==-1:                      return [] #continue#while
@@ -375,7 +376,7 @@ class CfgKeysDlg():
     
     def wn_sort(self, col):
         pass;                  #LOG and log('col={}',(col))
-        m,M         = self,CfgKeysDlg
+        m,M         = self,self.__class__
 
         col_s       = 'nm' if col==0 else \
                       'k1' if col==1 else \
@@ -402,12 +403,12 @@ class CfgKeysDlg():
         return []
        #def wn_sort
     
-    def do_sort(self, aid, ag):
+    def do_sort(self, aid, ag, data=''):
         return self.wn_sort(int(aid[3]))    # srtN
        #def do_sort
     
-    def do_fltr(self, aid, ag):
-        m,M         = self,CfgKeysDlg
+    def do_fltr(self, aid, ag, data=''):
+        m,M         = self,self.__class__
 
         lwks_n      = ag.cval('lwks')
         m.cmd_id    = '' if lwks_n==-1 else m.fl_Is[lwks_n]
@@ -430,8 +431,8 @@ class CfgKeysDlg():
                 )
        #def do_fltr
     
-    def do_work(self, aid, ag):
-        m,M         = self,CfgKeysDlg
+    def do_work(self, aid, ag, data=''):
+        m,M         = self,self.__class__
 
         lwks_n      = ag.cval('lwks')
         if lwks_n==-1:                      return [] #continue#while

@@ -1,3 +1,6 @@
+2.1.5 (2019-11-29)
+fixed: fit to 'recentfile'/'openedfile'command types
+
 2.1.4 (2018-09-26)
 fixed: avoid deprecated API
 
