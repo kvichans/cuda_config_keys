@@ -2,7 +2,7 @@
 Authors:
     Andrey Kvichansky    (kvichans on github)
 Version:
-    '2.1.5 2019-11-29'
+    '2.1.6 2020-05-25'
 '''
 #! /usr/bin/env python3
 
@@ -56,22 +56,22 @@ def collect_keys():
     pass;                      #LOG and log('app.app_api_version()={}',(app.app_api_version()))
 #   if True: # app.app_api_version()>='1.0.212':
     lcmds       = app.app_proc(app.PROC_GET_COMMANDS, '')
-    cmdinfos    = [('Commands'
-                   ,cmd['name']
-                   ,cmd['key1']
-                   ,cmd['key2']
-                   ,cmd['cmd']
-                   )
-                        if cmd['type']!='plugin' else 
-#                       if cmd['type']=='cmd' else 
-                   ('Plugins'
+    cmdinfos    = [('Plugins'
                    ,cmd['name']
                    ,cmd['key1']
                    ,cmd['key2']
                    ,f('{},{},{}', cmd['p_module'], cmd['p_method'], cmd['p_method_params']).rstrip(',')
                    )
+                        if cmd['type']=='plugin' else 
+                   ('Commands'
+                   ,cmd['name']
+                   ,cmd['key1']
+                   ,cmd['key2']
+                   ,cmd['cmd']
+                   )
                         for cmd in lcmds
-                        if cmd['type']!='lexer'
+                        if cmd['type'] in ('plugin', 'cmd')
+#                       if cmd['type']!='lexer'
                 ]
     return cmdinfos
    #def collect_keys

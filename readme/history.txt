@@ -1,3 +1,6 @@
+2.1.6 (2020-05-25)
+fixed: now skip all command else 'cmd' and 'plugin'
+
 2.1.5 (2019-11-29)
 fixed: fit to 'recentfile'/'openedfile'command types
 
