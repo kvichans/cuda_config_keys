@@ -150,7 +150,7 @@ class CfgKeysDlg():
     def show(self):
         m,M         = self,self.__class__
         m.ag    = DlgAgent(
-            form =dict(cap     = 'Config Hotkeys ('+VERSION_V+')'
+            form =dict(cap     = 'Configure Hotkeys ('+VERSION_V+')'
                       ,resize  = True                              ##!!
                       ,w       = M.DLG_W,   w_max   = M.DLG_W
                       ,h       = M.DLG_H                            #,   h_max   = M.DLG_H

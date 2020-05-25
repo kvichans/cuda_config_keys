@@ -1,5 +1,5 @@
 [info]
-title=Config Hotkeys
+title=Configure Hotkeys
 desc=Shows dialog to view/set hotkeys in editor
 type=cudatext-plugin
 subdir=cuda_config_keys
@@ -7,6 +7,6 @@ homepage=https://github.com/kvichans/cuda_config_keys
 
 [item1]
 section=commands
-caption=Config Hotkeys
+caption=Configure Hotkeys
 method=dlg_config_keys
 ;menu=0
