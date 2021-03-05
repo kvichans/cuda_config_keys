@@ -2,7 +2,7 @@
 Authors:
     Andrey Kvichansky    (kvichans on github)
 Version:
-    '2.1.6 2020-05-25'
+    '2.1.7 2021-03-03'
 '''
 #! /usr/bin/env python3
 
@@ -99,31 +99,31 @@ class CfgKeysDlg():
     lfsn        = 5+COL_WS[0]+COL_WS[1]+COL_WS[2]+5
     lrpt        = DLG_W-5-100
     ccnd_h      = _('Suitable command names will contain all specified words.'
-                    '\rTips:'
-                  '\r · Use "_" for word boundary.'
-                  '\r   "_up" selects "upper" but not "group".')
+                    '\nTips:'
+                  '\n · Use "_" for word boundary.'
+                  '\n   "_up" selects "upper" but not "group".')
     kcnd_h      = _('Suitable command hotkeys will contain all specified words.'
-                  '\rTips:'
-                  '\r · Use "_" for key-name boundary.'
-                  '\r   "_f" selects "F1" and "Ctrl+F" but not "Left".')
+                  '\nTips:'
+                  '\n · Use "_" for key-name boundary.'
+                  '\n   "_f" selects "F1" and "Ctrl+F" but not "Left".')
     scnd_h      = _('Suitable command snips will match specified string.'
-                  '\rUsage:'
-                  '\r · Type "/" and snip string and push Tab-key.'
-                  '\rTips:'
-                  '\r · Use ? for any character and * for any fragment.')
+                  '\nUsage:'
+                  '\n · Type "/" and snip string and push Tab-key.'
+                  '\nTips:'
+                  '\n · Use ? for any character and * for any fragment.')
     addk_h      = _('Set hotkey for command (if no one).'
-                  '\rExtend to series hotkeys (if command already has hotkeys).')
+                  '\nExtend to series hotkeys (if command already has hotkeys).')
     hrpt_h      = _('Shows HTML page with report of all hotkeys in editor.'
-                  '\rThe report is usefull to analyze hotkeys in a whole.')
+                  '\nThe report is usefull to analyze hotkeys in a whole.')
     trpt_h      = _('Show compact report of hotkeys in new tab.'
-                  '\rThe report is usefull to find free hotkeys.')
+                  '\nThe report is usefull to find free hotkeys.')
     cpnm_h      = _('Copy command name to clipboard')
     open_h      = _('Open source of plugin code')
     sort_h      = _('Sort data by click on table header' # or by hotkeys Alt+1, Alt+2, Alt+3'
-                  '\r3-stage loop of sorting:'
-                  '\r · in alphabetical order,'
-                  '\r · in reverse alphabetical order,'
-                  '\r · in natural order (as at start)'
+                  '\n3-stage loop of sorting:'
+                  '\n · in alphabetical order,'
+                  '\n · in reverse alphabetical order,'
+                  '\n · in natural order (as at start)'
                     )
     reND    = re.compile(r'\W')
 
@@ -144,13 +144,12 @@ class CfgKeysDlg():
         m.id2nkks,  \
         m.ks2id     = M.prep_keys_info()
         pass;                  #LOG and log('nkki_l={}',(pf(m.nkki_l)))
-        
        #def __init__
     
     def show(self):
         m,M         = self,self.__class__
         m.ag    = DlgAgent(
-            form =dict(cap     = 'Configure Hotkeys ('+VERSION_V+')'
+            form =dict(cap     = f(_('Configure Hotkeys ({})'), VERSION_V)
                       ,resize  = True                              ##!!
                       ,w       = M.DLG_W,   w_max   = M.DLG_W
                       ,h       = M.DLG_H                            #,   h_max   = M.DLG_H
@@ -233,14 +232,14 @@ class CfgKeysDlg():
         cnts    =[
   ('fltr',dict(tp='bt'  ,t=5+40+10      ,l=M.lrpt   ,w=100  ,cap=_('&Filter')           ,props='1'                  ,call=m.do_fltr )) # &f  default
  ,('drop',dict(tp='bt'  ,t=5+70+10      ,l=M.lrpt   ,w=100  ,cap=_('&All')                                          ,call=m.do_fltr )) # &a
- ,('orcn',dict(tp='ch'  ,t=5            ,l=M.lfk1-50,w=40   ,cap=_('&OR')                                           ,call=m.do_fltr )) # &o
- ,('orsn',dict(tp='ch'  ,t=5            ,l=M.lfsn-50,w=40   ,cap=_('O&R')                               ,vis=sndt_b ,call=m.do_fltr )) # &r
+ ,('orcn',dict(tp='ch'  ,t=5            ,l=M.lfk1-60,w=40   ,cap=_('&OR')                                           ,call=m.do_fltr )) # &o
+ ,('orsn',dict(tp='ch'  ,t=5            ,l=M.lfsn-60,w=40   ,cap=_('O&R')                               ,vis=sndt_b ,call=m.do_fltr )) # &r
  ,('ccn_',dict(tp='lb'  ,tid='orcn'     ,l=5+5      ,w=90   ,cap=_('In &Command:')      ,hint=M.ccnd_h                              )) # &c
  ,('ccnd',dict(tp='ed'  ,t=5+20         ,l=5+5      ,w=150                                                                          )) #
  ,('kcn_',dict(tp='lb'  ,tid='orcn'     ,l=M.lfk1   ,w=50   ,cap=_('In &Hotkeys:')      ,hint=M.kcnd_h                              )) # &h
  ,('kcnd',dict(tp='ed'  ,t=5+20         ,l=M.lfk1   ,w=120                                                                          )) #
                                                                                                                             
- ,('scn_',dict(tp='lb'  ,tid='orsn'     ,l=M.lfsn   ,w=50   ,cap=_('In &Snips:')        ,hint=M.scnd_h  ,vis=sndt_b                 )) # &s
+ ,('scn_',dict(tp='lb'  ,tid='orsn'     ,l=M.lfsn   ,w=50   ,cap=_('In &Snip(s):')        ,hint=M.scnd_h  ,vis=sndt_b                 )) # &s
  ,('shlp',dict(tp='bt'  ,tid='orsn'     ,l=M.lfsn+80,w=20   ,cap=_('&?')                                ,vis=sndt_b ,call=m.do_shlp )) # &?
  ,('scnd',dict(tp='ed'  ,t=5+20         ,l=M.lfsn   ,w=100                                              ,vis=sndt_b                 )) #
                                                                                                                                     
@@ -311,16 +310,17 @@ class CfgKeysDlg():
              [dict(cid='htxt',tp='me'    ,t=GAP  ,h=DH-28,l=GAP          ,w=DW   ,props='1,0,1'  ) #  ro,mono,border
              ,dict(cid='-'   ,tp='bt'    ,t=GAP+DH-23    ,l=GAP+DW-80    ,w=80   ,cap=_('&Close'))
              ], dict(htxt=
-                                _('• In Command.')  +c13+M.ccnd_h
-                   +c13+' '+c13+_('• In Hotkeys. ') +c13+M.kcnd_h
-             +('' if not sndt else ''
-                   +c13+' '+c13+_('• In Snip. ')    +c13+M.scnd_h
-              )
-                   +c13+' '+c13+_('• Set/Add. ')    +c13+M.addk_h
-                   +c13+' '+c13+_('• HTML-report. ')+c13+M.hrpt_h
-                   +c13+' '+c13+_('• Tab-report. ') +c13+M.trpt_h
-                   +c13+' '+c13+_('• Sorting. ')    +c13+M.sort_h
-             ), focus_cid='htxt')
+                     f(_('• In Command.\n{}'
+                       '\n\n• In Hotkeys.\n{}'
+                       '{}'
+                       '\n\n• Set/Add.\n{}'
+                       '\n\n• HTML-report.\n{}'
+                       '\n\n• Tab-report.\n{}'
+                       '\n\n• Sorting.\n{}'),
+                       M.ccnd_h, M.kcnd_h,
+                       f(_('\n\n• In Snip.\n{}'), M.scnd_h) if sndt else '',
+                       M.addk_h, M.hrpt_h, M.trpt_h, M.sort_h)
+                    ), focus_cid='htxt')
         return []
        #def do_shlp
     
@@ -500,10 +500,10 @@ class CfgKeysDlg():
             pre_cid = sndt.get_cmdid(new_sn)
             if pre_cid:
                 pre_cnm = sndt.get_name(pre_cid)
-                if app.msg_box(f(_('Snip "{}" is already assigned '
+                if app.msg_box(f(_('Snippet "{}" is already assigned'
                                    '\nto command "{}".'
                                    '\n'
-                                   '\nDo you want to reassign the snip '
+                                   '\nDo you want to reassign the snippet'
                                    '\nto command "{}"?')
                                 , new_sn, pre_cnm, cnm), app.MB_OKCANCEL)==app.ID_CANCEL: return [] #continue#while
             sndt.set(new_sn, cmd_id)

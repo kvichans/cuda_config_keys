@@ -2,14 +2,14 @@
 Authors:
 	Andrey Kvichansky    (kvichans on github)
 Version:
-    '1.1.2 2018-02-08'
+    '1.1.3 2021-03-03'
 '''
 #! /usr/bin/env python3
 
 import os, webbrowser, tempfile, json, re, collections, itertools
 #import sw 		as app
 import cudatext as app
-from    cudatext    import ed
+from   cudatext    import ed
 
 #### Release ####
 app_name	= 'CudaText'
@@ -105,14 +105,14 @@ def collect_data():
 
 	if app_name=='CudaText' and app.app_api_version()>='1.0.212':
 		lcmds   = app.app_proc(app.PROC_GET_COMMANDS, '')
-		cmdinfos= [('Commands'
+		cmdinfos= [(_('Commands')
 				   ,cmd['name']
 				   ,cmd['key1']
 				   ,cmd['key2']
 				   #,cmd['cmd']
 				   )
 						if cmd['type']=='cmd' else 
-				   ('Plugins'
+				   (_('Plugins')
 				   ,cmd['name']
 				   ,cmd['key1']
 				   ,cmd['key2']
@@ -132,7 +132,7 @@ def collect_data():
 			if cmdinfo[0]<=0: continue
 			if app_name=='CudaText':
 				# Add default category
-				cmdinfo	= ('Commands', cmdinfo[1], cmdinfo[2], cmdinfo[3])
+				cmdinfo	= (_('Commands'), cmdinfo[1], cmdinfo[2], cmdinfo[3])
 			else:
 				cmdinfo	= (cmdinfo[1], cmdinfo[2], cmdinfo[3], cmdinfo[4])
 
@@ -142,11 +142,11 @@ def collect_data():
 				name.startswith('plugin:')):	continue	# ?? plugin? smth-more?
 			if (app_name=='SynWrite' and
 				ctg=='Plugin'):
-				cmdinfo	= (ctg, 'Plugin: '+name, keys1, keys2)
+				cmdinfo	= (ctg, _('Plugin: ')+name, keys1, keys2)
 
 			cmdinfos += [cmdinfo]
 		if app_name=='CudaText':
-			cmdinfos = add_cud_plugins(cmdinfos, 'plugin: ', 'Plugins')
+			cmdinfos = add_cud_plugins(cmdinfos, 'plugin: ', _('Plugins'))
 
 	for ctg, name, keys1, keys2 in cmdinfos:
 		if ctg not in ctgs:
@@ -204,22 +204,22 @@ def do_report(fn):
 	,cmdinfos)	= collect_data()
 
 	# Fill reports
-	acmd_ank	= '<a name="all-cmds"/>All commands'
-	acmd_ref	= '<a href="#all-cmds">All commands</a>'
-	akeys_ank	= '<a name="all-keys"/>All keys with full command names'
-	akeys_ref	= '<a href="#all-keys">All keys</a>'
-	skeys_ank	= '<a name="ser-keys"/>All series-keys'
-	skeys_ref	= '<a href="#ser-keys">All series-keys</a>'
-	ckeys_ank	= '<a name="compact"/>All keys, compact view'
-	ckeys_ref	= '<a href="#compact">Compact keys</a>'
-	dbl_good	= '<a name="dbls"/>No conflicts'
-	dbl_fail	= '<a name="dbls"/>Conflicts'
-	dbl_ref		= '<a href="#dbls">Conflicts</a>'
-	c_cmd		= 'Command'
-	c_cmds		= 'Commands'
-	c_key		= 'Keys'
-	c_keys		= 'Keys'
-	c_btn		= 'Button'
+	acmd_ank	= '<a name="all-cmds"/>' + _('All commands')
+	acmd_ref	= '<a href="#all-cmds">' + _('All commands') + '</a>'
+	akeys_ank	= '<a name="all-keys"/>' + _('All keys with full command names')
+	akeys_ref	= '<a href="#all-keys">' + _('All keys') + '</a>'
+	skeys_ank	= '<a name="ser-keys"/>' + _('All series-keys')
+	skeys_ref	= '<a href="#ser-keys">' + _('All series-keys') + '</a>'
+	ckeys_ank	= '<a name="compact"/>' + _('All keys, compact view')
+	ckeys_ref	= '<a href="#compact">' + _('Compact keys') + '</a>'
+	dbl_good	= '<a name="dbls"/>' + _('No conflicts')
+	dbl_fail	= '<a name="dbls"/>' + _('Conflicts')
+	dbl_ref		= '<a href="#dbls">' + _('Conflicts') + '</a>'
+	c_cmd		= _('Command')
+	c_cmds		= _('Commands')
+	c_key		= _('Key')
+	c_keys		= _('Keys')
+	c_btn		= _('Button')
 	with open(fn, 'w', encoding='utf8') as f:
 		f.write(rpt_head)
 
@@ -424,8 +424,8 @@ def get_str_report(parts='compact|conflicts'):
 		wd_0	= max(len(keys) 				for keys in dblkeys)
 		wd_1	= max(len(keys2nms[keys][0])	for keys in dblkeys)
 		wd_2	= max(len(keys2nms[keys][1])	for keys in dblkeys)
-		rpt		+= 'Conflicts'
-		rpt		+= '\n'+'Keys'.center(wd_0)	+' · '+'Command 1'.center(wd_1)		 +' · '+'Command 2'.center(wd_2)		+' ·'
+		rpt		+= _('Conflicts')
+		rpt		+= '\n'+_('Keys').center(wd_0)	+' · '+_('Command 1').center(wd_1)		 +' · '+_('Command 2').center(wd_2)		+' ·'
 		for keys in dblkeys:
 			rpt	+= '\n'+keys.center(wd_0)	+' · '+keys2nms[keys][0].center(wd_1)+' · '+keys2nms[keys][1].center(wd_2)	+' ·'
 
@@ -448,17 +448,17 @@ class Command:
 	def report_to_html(self):
 #		if app_name=='CudaText' and app.app_api_version()<'1.0.105':
 		if app_name=='CudaText' and app.app_api_version()<'1.0.212':     # depr PROC_GET_COMMAND, PROC_GET_COMMAND_PLUGIN
-			app.msg_box('Plugin needs newer app version', app.MB_OK)
+			app.msg_box(_('Plugin needs newer app version'), app.MB_OK)
 			return
 
 		htm_file = os.path.join(tempfile.gettempdir(), '{}_keymapping.html'.format(app_name))
 		do_report(htm_file)
 		webbrowser.open_new_tab('file://'+htm_file)
-		app.msg_status('Opened browser with file '+htm_file)
+		app.msg_status(_('Opened browser with file ')+htm_file)
 
 	def compact_to_tab(self):
 		if app_name=='CudaText' and app.app_api_version()<'1.0.212':     # depr PROC_GET_COMMAND, PROC_GET_COMMAND_PLUGIN
-			app.msg_box('Plugin needs newer app version', app.MB_OK)
+			app.msg_box(_('Plugin needs newer app version'), app.MB_OK)
 			return
 		plain_rpt	= get_str_report()
 		if False:pass
