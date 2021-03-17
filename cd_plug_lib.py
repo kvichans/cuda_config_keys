@@ -550,6 +550,11 @@ def dlg_wrapper(title, w, h, cnts, in_vals={}, focus_cid=None):
                 v   = cnt[k]
                 v   = ('1' if v else '0') if isinstance(v, bool) else str(v)
                 lst += [k+'='+v]
+        # Alexey: support 'ex0'..'ex9'
+        if 'props' in cnt:
+            props = cnt['props'].split(',')
+            for p_i, p_s in enumerate(props):
+                lst += ['ex'+str(p_i)+'='+p_s]
         pass;                  #log('lst={}',lst)
         ctrls_l+= [chr(1).join(lst)]
        #for cnt
