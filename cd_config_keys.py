@@ -230,7 +230,7 @@ class CfgKeysDlg():
             return [('lwks',dict(items=itms))]
 
         cnts    =[
-  ('fltr',dict(tp='bt'  ,t=5+40+10      ,l=M.lrpt   ,w=100  ,cap=_('&Filter')           ,props='1'                  ,call=m.do_fltr )) # &f  default
+  ('fltr',dict(tp='bt'  ,t=5+40+10      ,l=M.lrpt   ,w=100  ,cap=_('&Filter')           ,ex0='1'                    ,call=m.do_fltr )) # &f  default
  ,('drop',dict(tp='bt'  ,t=5+70+10      ,l=M.lrpt   ,w=100  ,cap=_('&All')                                          ,call=m.do_fltr )) # &a
  ,('orcn',dict(tp='ch'  ,t=5            ,l=M.lfk1-60,w=40   ,cap=_('&OR')                                           ,call=m.do_fltr )) # &o
  ,('orsn',dict(tp='ch'  ,t=5            ,l=M.lfsn-60,w=40   ,cap=_('O&R')                               ,vis=sndt_b ,call=m.do_fltr )) # &r
@@ -247,7 +247,7 @@ class CfgKeysDlg():
 #,('srt1',dict(tp='bt'  ,t  =0          ,l=1000     ,w=0    ,cap=_('&2')    ,sto=F                                  ,call=m.do_sort ))# &2
 #,('srt2',dict(tp='bt'  ,t  =0          ,l=1000     ,w=0    ,cap=_('&3')    ,sto=F                                  ,call=m.do_sort ))# &3
 #,('srt3',dict(tp='bt'  ,t  =0          ,l=1000     ,w=0    ,cap=_('&4')    ,sto=F                      ,vis=sndt_b ,call=m.do_sort ))# &4
- ,('lwks',dict(tp='lvw' ,t=5+50         ,l=5        ,w=M.LST_W,h=M.LST_H    ,items=itms ,props='1'      ,a='tB'                     
+ ,('lwks',dict(tp='lvw' ,t=5+50         ,l=5        ,w=M.LST_W,h=M.LST_H    ,items=itms ,ex0='1'        ,a='tB'                     
                                                                 ,on_click_header=lambda idd, idc, data:m.wn_sort(data)              )) #     grid
                                                                                                                                     
  ,('cpnm',dict(tp='bt'  ,t=M.DLG_H-60   ,l=5+5      ,w=110  ,cap=_('Copy &name')        ,hint=M.cpnm_h  ,a='TB'     ,call=m.do_code )) # &n
@@ -307,7 +307,7 @@ class CfgKeysDlg():
         m,M         = self,self.__class__
         DW, DH      = 500-2*GAP, 500-2*GAP
         dlg_wrapper(_('Help for "Config Hotkeys"'), 500, 500,
-             [dict(cid='htxt',tp='me'    ,t=GAP  ,h=DH-28,l=GAP          ,w=DW   ,props='1,0,1'  ) #  ro,mono,border
+             [dict(cid='htxt',tp='me'    ,t=GAP  ,h=DH-28,l=GAP          ,w=DW   ,ex0='1', ex1='0', ex2='1'  ) #  ro,mono,border
              ,dict(cid='-'   ,tp='bt'    ,t=GAP+DH-23    ,l=GAP+DW-80    ,w=80   ,cap=_('&Close'))
              ], dict(htxt=
                      f(_('• In Command.\n{}'

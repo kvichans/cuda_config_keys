@@ -11,6 +11,9 @@ import os, webbrowser, tempfile, json, re, collections, itertools
 import cudatext as app
 from   cudatext    import ed
 
+from   .cd_plug_lib   import get_translation
+_      = get_translation(__file__)
+
 #### Release ####
 app_name	= 'CudaText'
 rpt_head = '''
